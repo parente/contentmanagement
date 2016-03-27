@@ -34,8 +34,8 @@ class UploadsHandler(IPythonHandler):
 def load_jupyter_server_extension(nb_app):
     web_app = nb_app.web_app
     host_pattern = '.*$'
-    route_pattern = url_path_join(web_app.settings['base_url'], 
-        '/uploads%s' % path_regex)
+    route_pattern = url_path_join(web_app.settings['base_url'],
+        '/api/uploads%s' % path_regex)
     handler_kwargs = dict(work_dir=nb_app.notebook_dir)
     web_app.add_handlers(host_pattern, [
         (route_pattern, UploadsHandler, handler_kwargs)

@@ -21,4 +21,6 @@ define({
     upload_failed_type: '<strong>Upload failed:</strong> Content not supported',
     upload_failed_unknown: '<strong>Upload failed:</strong> Unknown error',
     upload_success_tmpl: '<strong>Upload successful:</strong> Saved <%= count %> file(s) in <em><%= path %></em>'
+
+    fetch_success_tmpl: '<strong>Fetch successful:</strong> Saved <em><%= name %></em> in <em><%= path %></em>'
 });

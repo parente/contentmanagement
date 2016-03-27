@@ -17,8 +17,8 @@ define([
 
     // Build the uploads URL once
     var uploads_url = utils.url_join_encode(utils.get_body_data("baseUrl"), 
-        'uploads/');
-    
+        'api/uploads/');
+
     // Check if external file(s) being dragged.
     var is_file_drag = function(event) {
         if(event.dataTransfer &&  event.dataTransfer.types) {
@@ -30,10 +30,10 @@ define([
                 // firefox
                 return ts.contains('Files');
             }
-        }        
+        }
     };
 
-    // Test if a mouse event occurred outside the client area of the browser 
+    // Test if a mouse event occurred outside the client area of the browser
     // window
     var is_leaving_window = function(e) {
         e = e.originalEvent;
@@ -67,7 +67,7 @@ define([
             }).then(function(resp) {
                 var count = resp.files.length;
                 notify.show({
-                    type: 'success', 
+                    type: 'success',
                     text: _.template(messages.upload_success_tmpl)({
                         count: count,
                         path: resp.path
@@ -78,12 +78,12 @@ define([
                 console.warn('upload failed', arguments);
                 var text;
                 if(xhr.status === 400) {
-                    text = messages.upload_failed_type; 
+                    text = messages.upload_failed_type;
                 } else {
                     text = messages.upload_failed_unknown;
                 }
                 notify.show({
-                    type: 'warning', 
+                    type: 'warning',
                     text: text
                 });
                 events.trigger('urth.upload.fail', xhr);

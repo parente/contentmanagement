@@ -10,8 +10,9 @@ define([
     'base/js/dialog',
     'base/js/utils',
     'base/js/keyboard',
+    './notify',
     '../nls/messages'
-], function(require, $, _, dialog, utils, keyboard, messages) {
+], function(require, $, _, dialog, utils, keyboard, notify, messages) {
     var exports = {};
 
     // Constants
@@ -25,13 +26,15 @@ define([
         '<div class="urth-search-summary text-muted"></div>',
         '<div class="urth-search-results"></div>'
     ].join(''));
-    var search_url = utils.url_join_encode(utils.get_body_data("baseUrl"), 'search');
+
+    var search_url = utils.url_join_encode(utils.get_body_data("baseUrl"), 'api', 'search');
+    var fetch_url = utils.url_join_encode(utils.get_body_data("baseUrl"), 'api', 'fetches');
 
     // Configuration
     var can_insert;
-        
+
     // Search response handler that populates the dialog
-    var on_result = function(resp) {
+    var on_saerch_results = function(resp) {
         var $results = $('.urth-search-results');
 
         if(resp.total === 0) {
@@ -97,9 +100,29 @@ define([
         }
     };
 
+    // Fetch response handler that shows a notification
+    var on_fetch_results = function(resp) {
+        notify.show({
+            type: 'success',
+            text: _.template(messages.fetch_success_tmpl)({
+                name: resp.name,
+                path: resp.path
+            })
+        });
+    };
+
     // Search error handler that shows an brief error message in the dialog
     var on_error = function() {
         $('.urth-search-summary').text('Error fetching results');
+    };
+
+    // Check if text seems to be a URL-ish
+    var is_url = function(text) {
+        var parsed = document.createElement('a');
+        parsed.href = text;
+        return ((text.indexOf('http://') === 0 ||
+                 text.indexOf('https://') === 0) &&
+                parsed.hostname && parsed.hostname !== '');
     };
 
     // Register a listener once for keypress on the search input
@@ -109,11 +132,19 @@ define([
             $('.urth-search-summary').text(messages.search_status);
             $('.urth-search-results').empty();
             localStorage['urth.last_query_string'] = text;
-            $.ajax({
-                url: search_url,
-                data: {qs: text},
-                dataType: 'json'
-            }).then(on_result, on_error);
+            if(is_url(text)) {
+                $.ajax({
+                    url: fetch_url,
+                    data: {url: text},
+                    dataType: 'json'
+                }).then(on_fetch_results, on_error);
+            } else {
+                $.ajax({
+                    url: search_url,
+                    data: {qs: text},
+                    dataType: 'json'
+                }).then(on_search_results, on_error);
+            }
         }
     });
 

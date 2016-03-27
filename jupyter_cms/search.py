@@ -35,14 +35,14 @@ class SearchHandler(IPythonHandler):
             # Add relative paths
             result['rel_dirname'] = os.path.dirname(rel_path)
             result['rel_path'] = rel_path
-        
+
         self.write(dict(results=results, total=total))
         self.finish()
 
 def load_jupyter_server_extension(nb_app):
     web_app = nb_app.web_app
     host_pattern = '.*$'
-    route_pattern = url_path_join(web_app.settings['base_url'], '/search')
+    route_pattern = url_path_join(web_app.settings['base_url'], '/api/search')
     handler_kwargs = dict(work_dir=nb_app.notebook_dir)
     web_app.add_handlers(host_pattern, [
         (route_pattern, SearchHandler, handler_kwargs)
